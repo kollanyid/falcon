@@ -46,4 +46,12 @@ public class Message {
         result = 31 * result + (messageText != null ? messageText.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id=" + id +
+                ", messageText='" + messageText + '\'' +
+                '}';
+    }
 }
