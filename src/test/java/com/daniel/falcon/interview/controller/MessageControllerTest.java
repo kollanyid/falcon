@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -36,6 +37,9 @@ public class MessageControllerTest {
 
     @InjectMocks
     private MessageController messageController;
+
+    @Mock
+    private StringRedisTemplate stringRedisTemplate;
 
     @Before
     public void setUp() {

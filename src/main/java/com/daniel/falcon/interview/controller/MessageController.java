@@ -21,12 +21,12 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-    @RequestMapping(name = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     public void addMessage(@RequestBody String message) {
         stringRedisTemplate.convertAndSend(RedisConfig.TOPIC_NAME, message);
     }
 
-    @RequestMapping(name = "/get", method = RequestMethod.GET)
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
     public List<Message> getAll() {
         return messageService.getAllMessages();
     }
