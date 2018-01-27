@@ -27,7 +27,7 @@ public class MessageController {
     }
 
     @RequestMapping(name = "/get", method = RequestMethod.GET)
-    public List<Message> addMessage() {
+    public List<Message> getAll() {
         return messageService.getAllMessages();
     }
 }
