@@ -7,8 +7,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MessageReciver {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageReciver.class);
+public class MessageReceiver {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageReceiver.class);
 
     @Autowired
     private MessageService messageService;

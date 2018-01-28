@@ -1,6 +1,6 @@
 package com.daniel.falcon.interview.config;
 
-import com.daniel.falcon.interview.service.MessageReciver;
+import com.daniel.falcon.interview.service.MessageReceiver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +31,7 @@ public class RedisConfig {
     }
 
     @Bean
-    MessageListenerAdapter listenerAdapter(MessageReciver receiver) {
+    MessageListenerAdapter listenerAdapter(MessageReceiver receiver) {
         return new MessageListenerAdapter(receiver, "receiveMessage");
     }
 

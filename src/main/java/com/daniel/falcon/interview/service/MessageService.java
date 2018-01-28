@@ -17,11 +17,12 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public void addMessage(String text) {
+    public Message addMessage(String text) {
         Message message = new Message();
         message.setMessageText(text);
-        messageRepository.save(message);
+        Message result = messageRepository.save(message);
         LOGGER.info("Message successfully saved to database. {}", text);
+        return result;
     }
 
     public List<Message> getAllMessages() {

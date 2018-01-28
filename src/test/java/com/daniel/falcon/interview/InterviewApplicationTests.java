@@ -4,7 +4,7 @@ import com.daniel.falcon.interview.config.RedisConfig;
 import com.daniel.falcon.interview.config.WebSocketConfig;
 import com.daniel.falcon.interview.controller.MessageController;
 import com.daniel.falcon.interview.repository.MessageRepository;
-import com.daniel.falcon.interview.service.MessageReciver;
+import com.daniel.falcon.interview.service.MessageReceiver;
 import com.daniel.falcon.interview.service.MessageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +26,7 @@ public class InterviewApplicationTests {
     @Autowired
     private MessageRepository messageRepository;
     @Autowired
-    private MessageReciver messageReciver;
+    private MessageReceiver messageReciver;
     @Autowired
     private RedisConfig redisConfig;
     @Autowired
