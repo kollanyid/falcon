@@ -3,6 +3,7 @@ package com.daniel.falcon.interview.service;
 import com.daniel.falcon.interview.config.RedisConfig;
 import com.daniel.falcon.interview.model.Message;
 import com.daniel.falcon.interview.repository.MessageRepository;
+import com.daniel.falcon.interview.util.AbstractIntegrationTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,82 +12,86 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import javax.transaction.Transactional;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Transactional
-public class MessageReceiverIntegrationTest {
+@TestPropertySource(locations = "classpath:test-application.properties")
+public class MessageReceiverIT extends AbstractIntegrationTest {
 
     @LocalServerPort
     private int port;
-
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
-    private SimpMessagingTemplate template;
-    @Autowired
     private MessageRepository messageRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    static final String WEBSOCKET_URI = "ws://localhost:####/websocket";
-    static final String WEBSOCKET_TOPIC = "/topic/messages";
+    private static final String WEBSOCKET_URI = "ws://localhost:####/websocket";
+    private static final String WEBSOCKET_TOPIC = "/topic/messages";
 
-    BlockingQueue<String> blockingQueue;
-    WebSocketStompClient stompClient;
+    private String recivedMessage;
 
     @Before
     public void setup() {
-        blockingQueue = new LinkedBlockingDeque<>();
+        recivedMessage = null;
     }
 
 
     @Test
-    public void redisShouldSendDataToMessageReceiverAndPersist() {
+    public void redisShouldSendDataToMessageReceiverAndPersist() throws InterruptedException {
         String testText = "Test text" + new Date().getTime();
         stringRedisTemplate.convertAndSend(RedisConfig.TOPIC_NAME, testText);
+
+        waitUntilWithCondition(5000, 1000, () -> messageRepository.findAll().iterator().hasNext());
         List<Message> messages = messageRepository.findByMessageText(testText);
-        Assert.assertNotNull(messages);
+        Assert.assertTrue(!messages.isEmpty());
         Assert.assertEquals(testText, messages.get(0).getMessageText());
     }
 
     @Test
     public void redisShouldSendDataToMessageReceiverAndNotifySocket() throws ExecutionException, InterruptedException, TimeoutException {
-        stompClient = new WebSocketStompClient(new SockJsClient(
+        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(
                 Collections.singletonList(new WebSocketTransport(new StandardWebSocketClient()))));
-        String testText = "Test text" + new Date().getTime();
+        String expectedMessage = "Test text" + new Date().getTime();
+        String filledURI = WEBSOCKET_URI.replace("####", "" + port);
         StompSession session = stompClient
-                .connect(WEBSOCKET_URI.replace("####", "" + port), new StompSessionHandlerAdapter() {
+                .connect(filledURI, new StompSessionHandlerAdapter() {
                 })
-                .get(50, SECONDS);
+                .get(1, SECONDS);
+
         session.subscribe(WEBSOCKET_TOPIC, new DefaultStompFrameHandler());
-        stringRedisTemplate.convertAndSend(RedisConfig.TOPIC_NAME, testText);
-        String result = blockingQueue.poll();
-        /***
-         * TODO
-         * Session is unable to be notified by the receiver.
-         *
-         */
+        stringRedisTemplate.convertAndSend(RedisConfig.TOPIC_NAME, expectedMessage);
+
+        waitUntilWithCondition(10000, 200, () -> recivedMessage != null);
+        Assert.assertTrue(recivedMessage != null);
+        Assert.assertTrue(!recivedMessage.isEmpty());
+        Assert.assertEquals(expectedMessage, recivedMessage);
+    }
+
+    @Override
+    protected JdbcTemplate addJDBCTemplate() {
+        return jdbcTemplate;
     }
 
     class DefaultStompFrameHandler implements StompFrameHandler {
@@ -97,7 +102,7 @@ public class MessageReceiverIntegrationTest {
 
         @Override
         public void handleFrame(StompHeaders stompHeaders, Object o) {
-            blockingQueue.offer(new String((byte[]) o));
+            recivedMessage = new String((byte[]) o);
         }
     }
 }
