@@ -83,7 +83,8 @@ public class MessageReceiverIT extends AbstractIntegrationTest {
         session.subscribe(WEBSOCKET_TOPIC, new DefaultStompFrameHandler());
         stringRedisTemplate.convertAndSend(RedisConfig.TOPIC_NAME, expectedMessage);
 
-        waitUntilWithCondition(10000, 200, () -> recivedMessage != null);
+        waitUntilWithCondition(30000, 500, () -> recivedMessage != null);
+        System.out.println("Recived message is: "+recivedMessage);
         Assert.assertTrue(recivedMessage != null);
         Assert.assertTrue(!recivedMessage.isEmpty());
         Assert.assertEquals(expectedMessage, recivedMessage);

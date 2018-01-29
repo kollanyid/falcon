@@ -17,7 +17,7 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public Message addMessage(String text) {
+    Message addMessage(String text) {
         Message message = new Message();
         message.setMessageText(text);
         Message result = messageRepository.save(message);
