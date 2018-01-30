@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Rest controller for the application.
+ * Has a post (/add) and a get (/get) endpoint to handle incoming new messages and return previous ones.
+ */
 @RestController
 public class MessageController {
 
@@ -21,11 +25,25 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
+    /**
+     * Endpoint to add one message.
+     * Sends the message text with StringRedisTemplate.
+     *
+     * @param message message text
+     * @see StringRedisTemplate
+     */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public void addMessage(@RequestBody String message) {
         stringRedisTemplate.convertAndSend(RedisConfig.TOPIC_NAME, message);
     }
 
+    /**
+     * Returns all previously added messages.
+     * Calls in to MessageService to perform the operation.
+     *
+     * @return messages
+     * @see MessageService
+     */
     @RequestMapping(value = "/get", method = RequestMethod.GET)
     public List<Message> getAll() {
         return messageService.getAllMessages();

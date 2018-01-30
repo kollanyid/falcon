@@ -11,6 +11,18 @@ import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 
+/**
+ * Configuration class for Redis client (Jedis)
+ * Configures a RedisMessageListenerContainer, a StringRedisTemplate, a JedisConnectionFactory with the given host and port,
+ * and registers the MessageReceiver service in a MessageListenerAdapter.
+ * The Redis server host and port could be modified from the application.properties.
+ *
+ * @see MessageReceiver
+ * @see RedisMessageListenerContainer
+ * @see MessageListenerAdapter
+ * @see JedisConnectionFactory
+ * @see StringRedisTemplate
+ */
 @Configuration
 public class RedisConfig {
 
