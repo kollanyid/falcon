@@ -6,6 +6,13 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
+/**
+ * Configuration file to websocket usage.
+ * Sets up a MessageBrokerRegistry and registers and endpoint with  StompEndpointRegistry
+ *
+ * @see StompEndpointRegistry
+ * @see MessageBrokerRegistry
+ */
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {

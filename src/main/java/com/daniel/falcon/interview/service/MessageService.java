@@ -9,6 +9,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The MessageService stands as simplified connection with the MessageRepository.
+ * It's able to create message from String and persist it to the DB, and get all previous messages
+ * from it.
+ */
 @Service
 public class MessageService {
 
@@ -17,6 +22,12 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
+    /**
+     * Creates a message object from text and persist it to DB.
+     * Returns the created message object.
+     * @param text the message text
+     * @return persisted message
+     */
     Message addMessage(String text) {
         Message message = new Message();
         message.setMessageText(text);
@@ -25,6 +36,10 @@ public class MessageService {
         return result;
     }
 
+    /**
+     * Returns previous available messages from DB.
+     * @return all messages
+     */
     public List<Message> getAllMessages() {
         return (List<Message>) messageRepository.findAll();
     }
