@@ -1,1 +1,0 @@
-CREATE TABLE IF NOT EXISTS message(ID INT PRIMARY KEY auto_increment, message VARCHAR(255));
