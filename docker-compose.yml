@@ -1,0 +1,22 @@
+version: '2'
+services:
+  redis-server:
+    image: redis
+  mysql-server:
+    image: mysql
+    environment:
+       MYSQL_ROOT_PASSWORD: root 
+       MYSQL_DATABASE: interview 
+       MYSQL_USER: interview 
+       MYSQL_PASSWORD: interview 
+       MYSQL_ROOT_HOST: \%
+  interview-server:
+    image: danielkollanyi/interview
+    depends_on:
+     - redis-server
+     - mysql-server
+    links:
+     - redis-server
+     - mysql-server
+    ports:
+     - "8080:8080"
