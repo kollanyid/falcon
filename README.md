@@ -5,16 +5,26 @@ Data processing pipeline application
 ## Getting Started
 
 * Checkout the project
-* Start MySql server
-  * Install MySql and start it - [MySql download](https://dev.mysql.com/downloads/windows/installer/5.7.html)
-    * Create DB:  interview
-    * User:     interview
-    * Password: interview
+* **Without Docker:**
+  * Install MySql server and start it - [MySql download](https://dev.mysql.com/downloads/windows/installer/5.7.html)
+      * Create DB:  interview
+      * User:     interview
+      * Password: interview
+ 
+  * Install and start Redis [official site](https://redis.io/download) or [unofficial Win64 version](https://github.com/rgl/redis/downloads)
+    * By default it will start on localhost:6379
+  
+  * Start the application with "-Dspring.profiles.active=dev" VM parameter.
 
-  * Or execute a docker-compose file with the following content:
+* **With Docker:**
+  * Execute a docker-compose file with the following content:
 ```
 version: '2'
 services:
+  redis-server:
+    image: redis
+    ports:
+     - "6379:6379"
   mysql-server:
     image: mysql
     environment:
@@ -26,14 +36,11 @@ services:
     ports:
      - "3306:3306"
 ```
-  * The MySql server will start on localhost:3306
+  * Start the application with "-Dspring.profiles.active=dev" VM parameter.
   * The application will initialize a new table on start.
 
 
-  * Configure the application.properties and set spring.datasource.url to "jdbc:mysql://localhost:3306/interview"
 
-* Install and start Redis [official site](https://redis.io/download) or [unofficial Win64 version](https://github.com/rgl/redis/downloads)
-  * By default it will start on localhost:6379
 
 Feel free to update / modify default setting or use any other DB server, but do not forget to update the application.proerties file as well.
 
